@@ -13,11 +13,17 @@ bot.on('message', function(event) {
       event.reply('巨什麼啦XD');
     }
     if (msg.includes('買NS')) {
-      event.reply({
+      event.reply([
+        {
+          type: 'text',
+          text: '再買任天堂主機就剁gg'
+        },
+        {
           type: 'image',
           originalContentUrl: 'http://i.imgur.com/h3V74bK.jpg',
           previewImageUrl: 'http://i.imgur.com/h3V74bK.jpg'
-      });
+      }
+      ]);
     }
   }
 });
