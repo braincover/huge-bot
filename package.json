@@ -9,7 +9,6 @@
   "author": "Arthur",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.4",
     "linebot": "^1.3.0"
   }
 }
