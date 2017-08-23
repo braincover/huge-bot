@@ -15,6 +15,12 @@ bot.on('message', function(event) {
       }).catch(function(error) {
         // error
       });
+    } else if (msg.includes('買NS')) {
+      event.reply({
+          type: 'image',
+          originalContentUrl: 'http://i.imgur.com/h3V74bK.jpg',
+          previewImageUrl: 'http://i.imgur.com/h3V74bK.jpg'
+      });
     }
   }
 });
