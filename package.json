@@ -4,7 +4,7 @@
   "description": "huge what XD",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "node index.js"
   },
   "author": "Arthur",
   "license": "ISC",
