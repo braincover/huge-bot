@@ -1,0 +1,15 @@
+{
+  "name": "huge_bot",
+  "version": "1.0.0",
+  "description": "huge what XD",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "author": "Arthur",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4",
+    "linebot": "^1.3.0"
+  }
+}
