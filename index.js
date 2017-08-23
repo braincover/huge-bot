@@ -10,7 +10,7 @@ var bot = linebot({
 bot.on('message', function(event) {
   if (event.message.type = 'text') {
     var msg = event.message.text;
-    if (msg.includes('巨')) {
+    if (msg.indexOf('巨') !== -1) {
       event.reply('巨什麼啦XD').then(function(data) {
         console.log(msg);
       }).catch(function(error) {
