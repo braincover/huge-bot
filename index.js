@@ -10,12 +10,9 @@ bot.on('message', function(event) {
   if (event.message.type == 'text') {
     var msg = event.message.text;
     if (msg.includes('巨')) {
-      event.reply('巨什麼啦XD').then(function(data) {
-        // success
-      }).catch(function(error) {
-        // error
-      });
-    } else if (msg.includes('買NS')) {
+      event.reply('巨什麼啦XD');
+    }
+    if (msg.includes('買NS')) {
       event.reply({
           type: 'image',
           originalContentUrl: 'http://i.imgur.com/h3V74bK.jpg',
