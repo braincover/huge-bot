@@ -7,25 +7,19 @@ var bot = linebot({
 });
 
 bot.on('message', function(event) {
-  if (event.message.type == 'text') {
+  if (event.message.type === 'text') {
     var msg = event.message.text;
     if (msg.includes('巨')) {
       event.reply('巨什麼啦XD');
     }
     if (msg.includes('買NS')) {
-      event.reply([
-        {
-          type: 'text',
-          text: '再買任天堂主機就剁gg'
-        },
-        {
+      event.reply({
           type: 'image',
-          originalContentUrl: 'http://i.imgur.com/h3V74bK.jpg',
-          previewImageUrl: 'http://i.imgur.com/h3V74bK.jpg'
-      }
-      ]);
+          originalContentUrl: 'https://i.imgur.com/h3V74bK.jpg',
+          previewImageUrl: 'https://i.imgur.com/h3V74bK.jpg'
+      });
     }
   }
 });
 
-bot.listen('/', process.env.PORT || 8080);
+bot.listen('/', process.env.PORT || 3000);
