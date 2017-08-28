@@ -1,4 +1,6 @@
-var linebot = require('linebot');
+const linebot = require('linebot');
+const fs = require('fs');
+const parseCsv = require('csv-parse/lib/sync');
 
 var bot = linebot({
   channelId: process.env.ChannelId,
@@ -6,18 +8,28 @@ var bot = linebot({
   channelAccessToken: process.env.ChannelAccessToken
 });
 
+const file = fs.readFileSync('./rule.csv', 'utf8');
+const rules = parseCsv(file, { columns: true });
+
 bot.on('message', function(event) {
   if (event.message.type === 'text') {
     var msg = event.message.text;
-    if (msg.includes('巨')) {
-      event.reply('巨什麼啦XD');
-    }
-    if (msg.includes('買NS')) {
-      event.reply({
-          type: 'image',
-          originalContentUrl: 'https://i.imgur.com/h3V74bK.jpg',
-          previewImageUrl: 'https://i.imgur.com/h3V74bK.jpg'
-      });
+    var matchRule = rules.find(rule => {
+      return msg.includes(rule.key);
+    });
+    if (matchRule) {
+      var msgObj = {};
+      msgObj.type = matchRule.type;
+      switch(matchRule.type) {
+        case 'text':
+          msgObj.text = matchRule.text;
+          break;
+        case 'image':
+          msgObj.originalContentUrl = matchRule.image;
+          msgObj.previewImageUrl = matchRule.image;
+          break;
+      }
+      event.reply(msgObj);
     }
   }
 });
