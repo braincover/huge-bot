@@ -1,6 +1,5 @@
 const linebot = require('linebot');
-const fs = require('fs');
-const parseCsv = require('csv-parse/lib/sync');
+const airtable = require('airtable');
 
 var bot = linebot({
   channelId: process.env.ChannelId,
@@ -8,30 +7,66 @@ var bot = linebot({
   channelAccessToken: process.env.ChannelAccessToken
 });
 
-const file = fs.readFileSync('./rule.csv', 'utf8');
-const rules = parseCsv(file, { columns: true });
-
 bot.on('message', function(event) {
   if (event.message.type === 'text') {
     var msg = event.message.text;
-    var matchRule = rules.find(rule => {
-      return msg.includes(rule.key);
-    });
-    if (matchRule) {
-      var msgObj = {};
-      msgObj.type = matchRule.type;
-      switch(matchRule.type) {
-        case 'text':
-          msgObj.text = matchRule.text;
-          break;
-        case 'image':
-          msgObj.originalContentUrl = matchRule.image;
-          msgObj.previewImageUrl = matchRule.image;
-          break;
+    fetchRules(function(rules) {
+      var matchedRule = matchRules(msg, rules);
+      if (matchedRule) {
+        var msgObj = {};
+        msgObj.type = matchedRule.get('type')[0];
+        switch (msgObj.type) {
+          case 'text':
+            msgObj.text = matchedRule.get('text');
+            break;
+          case 'image':
+            msgObj.originalContentUrl = matchedRule.get('image');
+            msgObj.previewImageUrl = matchedRule.get('image');
+            break;
+        }
+        event.reply(msgObj);
       }
-      event.reply(msgObj);
-    }
+    });
   }
 });
 
 bot.listen('/', process.env.PORT || 3000);
+
+var rulesCache = [];
+var lastQueryDate;
+var fetchRules = function(callback) {
+  var CACHE_TIME = 60 * 1000;
+  var current = new Date;
+  var flag = true;
+  if (lastQueryDate) {
+    flag = (current - lastQueryDate) > CACHE_TIME;
+  }
+  if (flag) {
+    lastQueryDate = current;
+    console.log('Query airtable', lastQueryDate);
+    rulesCache = [];
+    var base = airtable.base(process.env.AIRTABLE_BASE_ID);
+    base('keyword').select({
+      view: "Grid view"
+    }).eachPage(function page(records, fetchNextPage) {
+      rulesCache = rulesCache.concat(records);
+      fetchNextPage();
+    }, function done(err) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log('Get rules:', rulesCache.length);
+      callback && callback(rulesCache);
+    });
+  } else {
+    callback && callback(rulesCache);
+  }
+}
+
+var matchRules = function(msg, rules) {
+  var matchRule = rules.find(rule => {
+    return msg.includes(rule.get('key'));
+  });
+  return matchRule;
+}
