@@ -14,7 +14,7 @@ bot.on('message', function(event) {
       var matchedRule = matchRules(msg, rules);
       if (matchedRule) {
         var msgObj = {};
-        msgObj.type = matchedRule.get('type')[0];
+        msgObj.type = matchedRule.get('type');
         switch (msgObj.type) {
           case 'text':
             msgObj.text = matchedRule.get('text');
