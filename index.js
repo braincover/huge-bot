@@ -21,8 +21,10 @@ bot.on('message', function(event) {
             msgObj.text = matchedRule.get('text');
             break;
           case 'image':
-            msgObj.originalContentUrl = matchedRule.get('image');
-            msgObj.previewImageUrl = matchedRule.get('image');
+            if (matchedRule.get('image')) {
+              msgObj.originalContentUrl = matchedRule.get('image')[0].url;
+              msgObj.previewImageUrl = matchedRule.get('image')[0].url;
+            }
             break;
         }
         event.reply(msgObj);
