@@ -1,5 +1,6 @@
 const linebot = require('linebot');
 const airtable = require('airtable');
+const mhxx = require('./mhxx');
 
 var bot = linebot({
   channelId: process.env.ChannelId,
@@ -27,6 +28,13 @@ bot.on('message', function(event) {
         event.reply(msgObj);
       }
     });
+
+    if (msg.toLowerCase() === '/roll') {
+      event.reply({
+        type: 'text',
+        text: mhxx.roulette()
+      });
+    }
   }
 });
 
