@@ -1,6 +1,7 @@
 const linebot = require('linebot');
 const airtable = require('airtable');
 const mhxx = require('./mhxx');
+const kanaconv = require('./kanaconv');
 
 var bot = linebot({
   channelId: process.env.ChannelId,
@@ -11,30 +12,46 @@ var bot = linebot({
 bot.on('message', function(event) {
   if (event.message.type === 'text') {
     var msg = event.message.text;
-    fetchRules(function(rules) {
-      var matchedRule = matchRules(msg, rules);
-      if (matchedRule) {
-        var msgObj = {};
-        msgObj.type = matchedRule.get('type');
-        switch (msgObj.type) {
-          case 'text':
-            msgObj.text = matchedRule.get('text');
-            break;
-          case 'image':
-            if (matchedRule.get('image')) {
-              msgObj.originalContentUrl = matchedRule.get('image')[0].url;
-              msgObj.previewImageUrl = matchedRule.get('image')[0].url;
-            }
-            break;
-        }
-        event.reply(msgObj);
-      }
-    });
+    var flag = true;
 
-    if (msg.toLowerCase() === '/roll') {
-      event.reply({
-        type: 'text',
-        text: mhxx.roulette()
+    if (flag && msg.toLowerCase() === '/roll') {
+      flag = false;
+      event.reply(mhxx.roulette());
+    }
+
+    const convKey = '巨巨幫我翻譯'
+    if (flag && msg.toLowerCase().startsWith(convKey)) {
+      flag = false;
+      var src = msg.substr(convKey.length).replace(':', '').replace('：', '').trim();
+      if (!!src) {
+        kanaconv.toKana(src).then(function(kana) {
+          event.reply(kana);
+        }, function(error) {
+          console.error('Kana Convert Failed!');
+          event.reply('555..窩4ㄈㄨ窩ㄅ會');
+        });
+      }
+    }
+
+    if (flag) {
+      fetchRules(function(rules) {
+        var matchedRule = matchRules(msg, rules);
+        if (matchedRule) {
+          var msgObj = {};
+          msgObj.type = matchedRule.get('type');
+          switch (msgObj.type) {
+            case 'text':
+              msgObj.text = matchedRule.get('text');
+              break;
+            case 'image':
+              if (matchedRule.get('image')) {
+                msgObj.originalContentUrl = matchedRule.get('image')[0].url;
+                msgObj.previewImageUrl = matchedRule.get('image')[0].url;
+              }
+              break;
+          }
+          event.reply(msgObj);
+        }
       });
     }
   }
