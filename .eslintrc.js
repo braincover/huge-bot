@@ -5,6 +5,7 @@ module.exports = {
     node: true,
     jest: true,
     jasmine: true,
+    browser: true,
   },
   plugins: ['prettier'],
   rules: {
@@ -12,6 +13,7 @@ module.exports = {
     'consistent-return': 'off',
     'no-param-reassign': 'off',
     'no-return-assign': 'off',
+    'no-await-in-loop': 'warn',
     'prettier/prettier': [
       'error',
       {
