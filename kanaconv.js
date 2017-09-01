@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 async function toKana(msg) {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await page.goto('http://but.lolicom.org/tool');
   await page.click('#src');
