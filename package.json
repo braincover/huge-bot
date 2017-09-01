@@ -12,6 +12,9 @@
   },
   "author": "Arthur",
   "license": "ISC",
+  "engines": {
+    "node": "8.x"
+  },
   "dependencies": {
     "airtable": "^0.5.0",
     "csv-parse": "^1.2.1",
