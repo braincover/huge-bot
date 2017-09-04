@@ -1,7 +1,11 @@
+/* eslint no-console: 0 */
+
 const linebot = require('linebot');
 const airtable = require('airtable');
 const mhxx = require('./mhxx');
 const kanaconv = require('./kanaconv');
+const ua = require('universal-analytics');
+const visitor = ua('UA-105745910-1', {https: true});
 
 let rulesCache = [];
 let lastQueryDate;
@@ -85,6 +89,7 @@ bot.on('message', event => {
       fetchRules(rules => {
         const matchedRule = matchRules(msg, rules);
         if (matchedRule) {
+          visitor.event('關鍵字回應', matchedRule.get('key')).send();
           const msgObj = {};
           msgObj.type = matchedRule.get('type');
           switch (msgObj.type) {
