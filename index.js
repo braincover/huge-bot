@@ -65,6 +65,7 @@ bot.on('message', event => {
 
     if (flag && msg.toLowerCase() === '/roll') {
       flag = false;
+      visitor.event('狩獵輪盤', '狩獵輪盤').send();
       event.reply(mhxx.roulette());
     }
 
@@ -77,6 +78,7 @@ bot.on('message', event => {
         .replace('：', '')
         .trim();
       if (src) {
+        visitor.event('假名翻譯', '假名翻譯', '', src).send();
         kanaconv.toKana(src).then(event.reply).catch(error => {
           console.error('Kana Convert Failed!');
           console.error(error);
