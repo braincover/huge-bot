@@ -89,6 +89,17 @@ bot.on('message', event => {
     }
 
     if (flag) {
+      const matches = msg.match(/巨巨覺得(.*)怎麼樣/);
+      if (matches) {
+        flag = false;
+        const device = matches[1].trim();
+        visitor.event('組合回應', '設計失敗', device).send();
+        const str = `${device}絕對不是設計失敗 是設計的太前衛了 一堆功能當時的用戶用不到才失敗\n\n${device}放到今天絕對大賣`;
+        event.reply(str);
+      }
+    }
+
+    if (flag) {
       fetchRules(rules => {
         const matchedRule = matchRules(msg, rules);
         if (matchedRule) {
