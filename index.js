@@ -3,8 +3,16 @@
 const linebot = require('linebot');
 const airtable = require('airtable');
 const mhxx = require('./mhxx');
-const kanaconv = require('./kanaconv');
 const ua = require('universal-analytics');
+const kuroshiro = require('kuroshiro');
+
+kuroshiro.init(err => {
+  if (err) {
+    console.log(`kuroshiro init failed: ${err}`);
+  } else {
+    console.log('kuroshiro init successed.');
+  }
+});
 
 const visitor = ua('UA-105745910-1', { https: true });
 
@@ -80,11 +88,12 @@ bot.on('message', event => {
         .trim();
       if (src) {
         visitor.event('假名翻譯', '假名翻譯', src).send();
-        kanaconv.toKana(src).then(event.reply).catch(error => {
-          console.error('Kana Convert Failed!');
-          console.error(error);
-          event.reply('555..窩4ㄈㄨ窩ㄅ會');
+        const result = kuroshiro.convert(src, {
+          mode: 'okurigana',
+          delimiter_start: ' ',
+          delimiter_end: '\n',
         });
+        event.reply(result);
       }
     }
 
