@@ -5,7 +5,6 @@ const { createServer } = require('bottender/express');
 const airtable = require('airtable');
 const ua = require('universal-analytics');
 const kuroshiro = require('kuroshiro');
-const thenify = require('thenify');
 
 const mhxx = require('./mhxx');
 
@@ -22,45 +21,28 @@ const visitor = ua('UA-105745910-1', { https: true });
 let rulesCache = [];
 let lastQueryDate;
 
-// eslint-disable-next-line no-underscore-dangle
-function _fetchRules(callback) {
+async function fetchRules() {
   const CACHE_TIME = 60 * 1000;
   const current = new Date();
-  let flag = true;
+  let shouldUpdate = true;
   if (lastQueryDate) {
-    flag = current - lastQueryDate > CACHE_TIME;
+    shouldUpdate = current - lastQueryDate > CACHE_TIME;
   }
-  if (flag) {
+  if (shouldUpdate) {
     lastQueryDate = current;
     console.log('Query airtable', lastQueryDate);
-    rulesCache = [];
+
     const base = airtable.base(process.env.AIRTABLE_BASE_ID);
-    base('keyword')
+    const newRules = await base('keyword')
       .select({
         view: 'Grid view',
       })
-      .eachPage(
-        (records, fetchNextPage) => {
-          rulesCache = rulesCache.concat(records);
-          fetchNextPage();
-        },
-        err => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          console.log('Get rules:', rulesCache.length);
-          if (callback) {
-            callback(null, rulesCache);
-          }
-        }
-      );
-  } else if (callback) {
-    callback(null, rulesCache);
-  }
-}
+      .all();
 
-const fetchRules = thenify(_fetchRules);
+    rulesCache = newRules || rulesCache;
+  }
+  return rulesCache;
+}
 
 function matchRules(msg, rules) {
   const matchRule = rules.find(rule => msg.includes(rule.get('key')));
@@ -101,9 +83,8 @@ const keywordHandler = async context => {
   const matchedRule = matchRules(context.event.text, rules);
   if (matchedRule) {
     visitor.event('關鍵字回應', matchedRule.get('key')).send();
-    const msgObj = {};
-    msgObj.type = matchedRule.get('type');
-    switch (msgObj.type) {
+    const type = matchedRule.get('type');
+    switch (type) {
       case 'text':
         await context.replyText(matchedRule.get('text'));
         break;
