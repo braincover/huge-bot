@@ -1,10 +1,12 @@
 /* eslint no-console: 0 */
 
-const linebot = require('linebot');
+const { LineBot, LineHandler } = require('bottender');
+const { createServer } = require('bottender/express');
 const airtable = require('airtable');
-const mhxx = require('./mhxx');
 const ua = require('universal-analytics');
 const kuroshiro = require('kuroshiro');
+
+const mhxx = require('./mhxx');
 
 kuroshiro.init(err => {
   if (err) {
@@ -19,41 +21,27 @@ const visitor = ua('UA-105745910-1', { https: true });
 let rulesCache = [];
 let lastQueryDate;
 
-function fetchRules(callback) {
+async function fetchRules() {
   const CACHE_TIME = 60 * 1000;
   const current = new Date();
-  let flag = true;
+  let shouldUpdate = true;
   if (lastQueryDate) {
-    flag = current - lastQueryDate > CACHE_TIME;
+    shouldUpdate = current - lastQueryDate > CACHE_TIME;
   }
-  if (flag) {
+  if (shouldUpdate) {
     lastQueryDate = current;
     console.log('Query airtable', lastQueryDate);
-    rulesCache = [];
+
     const base = airtable.base(process.env.AIRTABLE_BASE_ID);
-    base('keyword')
+    const newRules = await base('keyword')
       .select({
         view: 'Grid view',
       })
-      .eachPage(
-        (records, fetchNextPage) => {
-          rulesCache = rulesCache.concat(records);
-          fetchNextPage();
-        },
-        err => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          console.log('Get rules:', rulesCache.length);
-          if (callback) {
-            callback(rulesCache);
-          }
-        }
-      );
-  } else if (callback) {
-    callback(rulesCache);
+      .all();
+
+    rulesCache = newRules || rulesCache;
   }
+  return rulesCache;
 }
 
 function matchRules(msg, rules) {
@@ -61,78 +49,72 @@ function matchRules(msg, rules) {
   return matchRule;
 }
 
-const bot = linebot({
-  channelId: process.env.ChannelId,
-  channelSecret: process.env.ChannelSecret,
-  channelAccessToken: process.env.ChannelAccessToken,
-});
+const rollHandler = async context => {
+  visitor.event('狩獵輪盤', '狩獵輪盤').send();
+  await context.replyText(mhxx.roulette());
+};
 
-bot.on('message', event => {
-  if (event.message.type === 'text') {
-    const msg = event.message.text;
-    let flag = true;
+const translationHandler = async (context, match) => {
+  const src = match[1].trim();
 
-    if (flag && msg.toLowerCase() === '/roll') {
-      flag = false;
-      visitor.event('狩獵輪盤', '狩獵輪盤').send();
-      event.reply(mhxx.roulette());
-    }
+  if (src) {
+    visitor.event('假名翻譯', '假名翻譯', src).send();
+    const result = kuroshiro.convert(src, {
+      mode: 'okurigana',
+      delimiter_start: ' ',
+      delimiter_end: '\n',
+    });
+    await context.replyText(
+      `${context.session.user.displayName}你的翻譯是：${result}`
+    );
+  }
+};
 
-    const convKey = '巨巨幫我翻譯';
-    if (flag && msg.toLowerCase().startsWith(convKey)) {
-      flag = false;
-      const src = msg
-        .substr(convKey.length)
-        .replace(':', '')
-        .replace('：', '')
-        .trim();
-      if (src) {
-        visitor.event('假名翻譯', '假名翻譯', src).send();
-        const result = kuroshiro.convert(src, {
-          mode: 'okurigana',
-          delimiter_start: ' ',
-          delimiter_end: '\n',
-        });
-        event.reply(result);
-      }
-    }
+const howHandler = async (context, match) => {
+  const device = match[1].trim();
+  visitor.event('組合回應', '設計失敗', device).send();
+  const str = `${device}絕對不是設計失敗 是設計的太前衛了 一堆功能當時的用戶用不到才失敗\n\n${device}放到今天絕對大賣`;
+  await context.replyText(str);
+};
 
-    if (flag) {
-      const matches = msg.match(/巨巨覺得(.*)怎麼樣/);
-      if (matches) {
-        flag = false;
-        const device = matches[1].trim();
-        visitor.event('組合回應', '設計失敗', device).send();
-        const str = `${device}絕對不是設計失敗 是設計的太前衛了 一堆功能當時的用戶用不到才失敗\n\n${device}放到今天絕對大賣`;
-        event.reply(str);
-      }
-    }
+const keywordHandler = async context => {
+  const rules = await fetchRules();
 
-    if (flag) {
-      fetchRules(rules => {
-        const matchedRule = matchRules(msg, rules);
-        if (matchedRule) {
-          visitor.event('關鍵字回應', matchedRule.get('key')).send();
-          const msgObj = {};
-          msgObj.type = matchedRule.get('type');
-          switch (msgObj.type) {
-            case 'text':
-              msgObj.text = matchedRule.get('text');
-              break;
-            case 'image':
-              if (matchedRule.get('image')) {
-                msgObj.originalContentUrl = matchedRule.get('image')[0].url;
-                msgObj.previewImageUrl = matchedRule.get('image')[0].url;
-              }
-              break;
-            default:
-              break;
-          }
-          event.reply(msgObj);
+  const matchedRule = matchRules(context.event.text, rules);
+  if (matchedRule) {
+    visitor.event('關鍵字回應', matchedRule.get('key')).send();
+    const type = matchedRule.get('type');
+    switch (type) {
+      case 'text':
+        await context.replyText(matchedRule.get('text'));
+        break;
+      case 'image':
+        if (matchedRule.get('image')) {
+          await context.replyImage(matchedRule.get('image')[0].url);
         }
-      });
+        break;
+      default:
+        break;
     }
   }
+};
+
+const handler = new LineHandler()
+  .onText(/^\/roll$/i, rollHandler)
+  .onText(/^巨巨幫我翻譯[:|：]?\s*(.*)/, translationHandler)
+  .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
+  .onText(keywordHandler);
+
+const bot = new LineBot({
+  channelSecret: process.env.ChannelSecret,
+  accessToken: process.env.ChannelAccessToken,
 });
 
-bot.listen('/', process.env.PORT || 3000);
+bot.onEvent(handler);
+
+const server = createServer(bot);
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+  console.log(`server is running on ${PORT}...`);
+});
