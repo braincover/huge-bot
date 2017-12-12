@@ -45,12 +45,27 @@ async function fetchRules() {
   return rulesCache;
 }
 
+function toASCII(chars) {
+  let ascii = '';
+  for (let i = 0; i < chars.length; i += 1) {
+    let c = chars[i].charCodeAt(0);
+    // make sure we only convert half-full width char
+    if (c >= 0xff00 && c <= 0xffef) {
+      /* eslint-disable no-bitwise */
+      c = 0xff & (c + 0x20);
+      /* eslint-enable no-bitwise */
+    }
+    ascii += String.fromCharCode(c);
+  }
+  return ascii;
+}
+
 function matchRules(msg, rules) {
   const matchRule = rules.find(rule => {
     let text = msg;
     let key = rule.get('key');
     if (rule.get('insensitive')) {
-      text = text.toLowerCase().replace(/[()]/g, '');
+      text = toASCII(text).toLowerCase().replace(/[()]/g, '');
       key = key.toLowerCase();
     }
     return text.includes(key);
