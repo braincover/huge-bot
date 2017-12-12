@@ -66,7 +66,7 @@ const translationHandler = async (context, match) => {
       delimiter_end: '\n',
     });
     await context.replyText(
-      `${context.session.user.displayName}你的翻譯是：${result}`
+      `${context.session.user.displayName}你的翻譯是：\n${result}`
     );
   }
 };
