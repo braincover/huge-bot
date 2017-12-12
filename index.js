@@ -33,13 +33,14 @@ async function fetchRules() {
     console.log('Query airtable', lastQueryDate);
 
     const base = airtable.base(process.env.AIRTABLE_BASE_ID);
-    const newRules = await base('keyword')
+    base('keyword')
       .select({
         view: 'Grid view',
       })
-      .all();
-
-    rulesCache = newRules || rulesCache;
+      .all()
+      .then(newRules => {
+        rulesCache = newRules || rulesCache;
+      });
   }
   return rulesCache;
 }
