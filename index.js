@@ -46,7 +46,15 @@ async function fetchRules() {
 }
 
 function matchRules(msg, rules) {
-  const matchRule = rules.find(rule => msg.includes(rule.get('key')));
+  const matchRule = rules.find(rule => {
+    let text = msg;
+    let key = rule.get('key');
+    if (rule.get('insensitive')) {
+      text = text.toLowerCase().replace(/[()]/g, '');
+      key = key.toLowerCase();
+    }
+    return text.includes(key);
+  });
   return matchRule;
 }
 
