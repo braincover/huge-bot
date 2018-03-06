@@ -109,16 +109,20 @@ const keywordHandler = async context => {
     visitor.event('關鍵字回應', matchedRule.get('key')).send();
     const type = matchedRule.get('type');
     switch (type) {
-      case 'text':
-        await context.replyText(matchedRule.get('text'));
+      case 'text': {
+        const text = matchedRule.get('text').replace(/\\n/g, '\n');
+        await context.replyText(text);
         break;
-      case 'image':
+      }
+      case 'image': {
         if (matchedRule.get('image')) {
           await context.replyImage(matchedRule.get('image')[0].url);
         }
         break;
-      default:
+      }
+      default: {
         break;
+      }
     }
   }
 };
