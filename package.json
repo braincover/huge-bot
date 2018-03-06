@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "airtable": "^0.5.0",
-    "bottender": "^0.14.6",
+    "bottender": "^0.14.23",
     "csv-parse": "^1.2.1",
     "dotenv": "^4.0.0",
     "kuroshiro": "^0.1.5",
