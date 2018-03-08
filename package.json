@@ -36,6 +36,7 @@
     "csv-parse": "^1.2.1",
     "dotenv": "^4.0.0",
     "kuroshiro": "^0.1.5",
+    "pick-random": "^2.0.0",
     "puppeteer": "^0.10.1",
     "random-item": "^1.0.0",
     "universal-analytics": "^0.4.15"

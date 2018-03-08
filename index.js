@@ -7,6 +7,7 @@ const ua = require('universal-analytics');
 const kuroshiro = require('kuroshiro');
 
 const mhxx = require('./mhxx');
+const mhw = require('./mhw');
 
 kuroshiro.init(err => {
   if (err) {
@@ -73,8 +74,13 @@ function matchRules(msg, rules) {
   return matchRule;
 }
 
-const rollHandler = async context => {
-  visitor.event('狩獵輪盤', '狩獵輪盤').send();
+const rollWHandler = async context => {
+  visitor.event('狩獵輪盤', 'MHW').send();
+  await context.replyText(mhw.roulette());
+};
+
+const rollXXHandler = async context => {
+  visitor.event('狩獵輪盤', 'MHXX').send();
   await context.replyText(mhxx.roulette());
 };
 
@@ -128,7 +134,8 @@ const keywordHandler = async context => {
 };
 
 const handler = new LineHandler()
-  .onText(/^\/roll$/i, rollHandler)
+  .onText(/^\/roll$/i, rollWHandler)
+  .onText(/^\/roll -xx$/i, rollXXHandler)
   .onText(/^巨巨幫我翻譯[:|：]?\s*(.*)/, translationHandler)
   .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
   .onText(keywordHandler);
