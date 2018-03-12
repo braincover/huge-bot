@@ -34,14 +34,14 @@ const mantles = [
   '迴避衣裝',
   '不動衣裝',
 ];
-const smokers = [
+const boosters = [
   '療癒煙筒',
   '解除煙筒',
   '達人煙筒',
 ];
 const tools = [].concat(
   mantles,
-  smokers
+  boosters
 );
 
 const monsters0 = [
