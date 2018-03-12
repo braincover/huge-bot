@@ -83,23 +83,33 @@ const monsters3 = [
   // '熔山龍',
   // '冥燈龍',
 ];
-const monsters = [].concat(
+const monsters = [
   monsters0,
   monsters1,
   monsters2,
-  monsters3
-);
+  monsters3,
+];
 
 module.exports = {
-  roulette() {
+  roulette(star) {
     let msg = '';
     ['一', '二', '三', '四'].forEach(num => {
       const weapon = random(weapons);
       const toolspair = pickRandom(tools, { count: 2 });
       msg += `${num}: ${weapon} (${toolspair[0]}, ${toolspair[1]})\n`;
     });
-    const monster = random(monsters);
-    msg += `\n目標: ${monster}`;
+    const targets = [];
+    if (star < 3) {
+      monsters.forEach((mons, index) => {
+        if (index > star) {
+          targets.push(...mons);
+        }
+      });
+      const monster = random(targets);
+      msg += `\n目標: ${monster}`;
+    } else {
+      msg += '\n任務: 【超特殊許可】對女友坦白\n目標: 女友 (危險度9)';
+    }
     return msg;
   },
 };

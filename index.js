@@ -74,9 +74,14 @@ function matchRules(msg, rules) {
   return matchRule;
 }
 
-const rollWHandler = async context => {
-  visitor.event('狩獵輪盤', 'MHW').send();
-  await context.replyText(mhw.roulette());
+const rollWHandler = async (context, match) => {
+  let star = -1;
+  const cap = match[1];
+  if (cap) {
+    star = parseInt(cap, 10);
+  }
+  visitor.event('狩獵輪盤', 'MHW', star).send();
+  await context.replyText(mhw.roulette(star));
 };
 
 const rollXXHandler = async context => {
@@ -134,7 +139,7 @@ const keywordHandler = async context => {
 };
 
 const handler = new LineHandler()
-  .onText(/^\/roll$/i, rollWHandler)
+  .onText(/^\/roll(?: >(\d))?$/i, rollWHandler)
   .onText(/^\/roll -xx$/i, rollXXHandler)
   .onText(/^巨巨幫我翻譯[:|：]?\s*(.*)/, translationHandler)
   .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
