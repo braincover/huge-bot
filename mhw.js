@@ -1,5 +1,6 @@
 const random = require('random-item');
 const pickRandom = require('pick-random');
+const flatten = require('lodash/flatten');
 
 const weapons = [
   '大劍',
@@ -94,19 +95,15 @@ const monsters = [
 module.exports = {
   roulette(star) {
     let msg = '';
+
     ['一', '二', '三', '四'].forEach(num => {
       const weapon = random(weapons);
       const toolspair = pickRandom(tools, { count: 2 });
       msg += `${num}: ${weapon} (${toolspair[0]}, ${toolspair[1]})\n`;
     });
-    const targets = [];
+
     if (star < 3) {
-      monsters.forEach((mons, index) => {
-        if (index > star) {
-          targets.push(...mons);
-        }
-      });
-      const monster = random(targets);
+      const monster = random(flatten(monsters.slice(star + 1, 4)));
       msg += `\n目標: ${monster}`;
     } else {
       msg += '\n任務: 【超特殊許可】對女友坦白\n目標: 女友 (危險度9)';
