@@ -35,6 +35,7 @@ const mantles = [
   '挑釁衣裝',
   '迴避衣裝',
   '不動衣裝',
+  '轉身衣裝',
 ];
 const boosters = [
   '療癒煙筒',
