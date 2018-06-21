@@ -6,8 +6,9 @@ const airtable = require('airtable');
 const ua = require('universal-analytics');
 const kuroshiro = require('kuroshiro');
 
-const mhxx = require('./mhxx');
-const mhw = require('./mhw');
+const mhxx = require('./func/mhxx');
+const mhw = require('./func/mhw');
+const fifa = require('./func/fifa');
 
 kuroshiro.init(err => {
   if (err) {
@@ -112,6 +113,49 @@ const howHandler = async (context, match) => {
   await context.replyText(str);
 };
 
+const fifaHandler = async (context, match) => {
+  const cmd = match[1].trim();
+  switch (cmd) {
+    case 'help': {
+      const cmds = [
+        '/fifa today 顯示今天的比賽時間',
+        '/fifa tomorrow 顯示明天的比賽時間',
+        '/fifa current 顯示當前賽況',
+        '/fifa last 顯示上一場比賽的結果',
+      ];
+      await context.replyText(cmds.join('\n'));
+      break;
+    }
+    case 'today': {
+      visitor.event('FIFA', 'today').send();
+      const result = await fifa.today();
+      await context.replyText(result);
+      break;
+    }
+    case 'tomorrow': {
+      visitor.event('FIFA', 'tomorrow').send();
+      const result = await fifa.tomorrow();
+      await context.replyText(result);
+      break;
+    }
+    case 'current': {
+      visitor.event('FIFA', 'current').send();
+      const result = await fifa.current();
+      await context.replyText(result);
+      break;
+    }
+    case 'last': {
+      visitor.event('FIFA', 'last').send();
+      const result = await fifa.last();
+      await context.replyText(result);
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+};
+
 const keywordHandler = async context => {
   const rules = await fetchRules();
 
@@ -143,6 +187,7 @@ const handler = new LineHandler()
   .onText(/^\/roll -xx$/i, rollXXHandler)
   .onText(/^巨巨幫我翻譯[:|：]?\s*(.*)/, translationHandler)
   .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
+  .onText(/^\/fifa (.*)/, fifaHandler)
   .onText(keywordHandler);
 
 const bot = new LineBot({

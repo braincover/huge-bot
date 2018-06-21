@@ -37,33 +37,11 @@ const mantles = [
   '不動衣裝',
   '轉身衣裝',
 ];
-const boosters = [
-  '療癒煙筒',
-  '解除煙筒',
-  '達人煙筒',
-];
-const tools = [].concat(
-  mantles,
-  boosters
-);
+const boosters = ['療癒煙筒', '解除煙筒', '達人煙筒'];
+const tools = [].concat(mantles, boosters);
 
-const monsters0 = [
-  '眩鳥',
-  '搔鳥',
-  '大兇顎龍',
-  '大兇豺龍',
-  '岩賊龍',
-];
-const monsters1 = [
-  '毒妖鳥',
-  '飛雷龍',
-  '蠻顎龍',
-  '泥魚龍',
-  '雌火龍',
-  '土砂龍',
-  '骨鎚龍',
-  '浮空龍',
-];
+const monsters0 = ['眩鳥', '搔鳥', '大兇顎龍', '大兇豺龍', '岩賊龍'];
+const monsters1 = ['毒妖鳥', '飛雷龍', '蠻顎龍', '泥魚龍', '雌火龍', '土砂龍', '骨鎚龍', '浮空龍'];
 const monsters2 = [
   '火龍',
   '蒼火龍',
@@ -86,12 +64,7 @@ const monsters3 = [
   // '熔山龍',
   // '冥燈龍',
 ];
-const monsters = [
-  monsters0,
-  monsters1,
-  monsters2,
-  monsters3,
-];
+const monsters = [monsters0, monsters1, monsters2, monsters3];
 
 module.exports = {
   roulette(star) {
