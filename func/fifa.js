@@ -1,4 +1,6 @@
 const axios = require('axios');
+const moment = require('moment');
+require('moment-timezone');
 
 async function today() {
   try {
@@ -9,15 +11,14 @@ async function today() {
     if (matches === undefined || matches.length < 1) {
       return 'FIFA今天沒有比賽喔';
     }
-    const replies = matches.map(match => {
-      const date = new Date(match.datetime);
-      const datetime = date.toLocaleTimeString('zh-TW', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-      return `${match.home_team.country} vs ${match.away_team
-        .country} -- ${datetime}`;
-    });
+    const replies = matches.map(
+      match =>
+        `${match.home_team.country} vs ${match.away_team.country} -- ${moment(
+          match.datetime
+        )
+          .tz('Asia/Taipei')
+          .format('HH:mm')}`
+    );
     return replies.join('\n');
   } catch (error) {
     throw error;
@@ -76,15 +77,14 @@ async function tomorrow() {
           date.getUTCDate() === tomorrowDate.getUTCDate()
         );
       })
-      .map(match => {
-        const date = new Date(match.datetime);
-        const datetime = date.toLocaleTimeString('zh-TW', {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-        return `${match.home_team.country} vs ${match.away_team
-          .country} -- ${datetime}`;
-      });
+      .map(
+        match =>
+          `${match.home_team.country} vs ${match.away_team.country} -- ${moment(
+            match.datetime
+          )
+            .tz('Asia/Taipei')
+            .format('HH:mm')}`
+      );
     return replies.join('\n');
   } catch (error) {
     throw error;

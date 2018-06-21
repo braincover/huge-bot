@@ -39,6 +39,7 @@
     "kuroshiro": "^0.1.5",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
+    "moment-timezone": "^0.5.20",
     "pick-random": "^2.0.0",
     "random-item": "^1.0.0",
     "universal-analytics": "^0.4.15"
