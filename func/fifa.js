@@ -48,7 +48,7 @@ async function last() {
     if (matches === undefined || matches.length < 1) {
       return '沒有找到任何比賽';
     }
-    const finishedMatches = matches.filter(match => match.winner !== undefined);
+    const finishedMatches = matches.filter(match => !!match.winner);
     const match = finishedMatches[0];
     return `${match.home_team.country} ${match.home_team.goals} vs ${match
       .away_team.country} ${match.away_team.goals}`;
