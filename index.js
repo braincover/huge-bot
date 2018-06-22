@@ -152,11 +152,12 @@ const fifaHandler = async (context, match) => {
       break;
     }
     case 'team': {
-      let code = '';
       if (match[2] !== undefined) {
-        code = match[2].trim();
+        const code = match[2].trim();
+        result = await fifa.teamStatus(code);
+      } else {
+        result = await fifa.teamsStatus();
       }
-      result = await fifa.teamStatus(code);
       break;
     }
     case 'next': {
