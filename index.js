@@ -114,45 +114,77 @@ const howHandler = async (context, match) => {
 };
 
 const fifaHandler = async (context, match) => {
-  const cmd = match[1].trim();
+  const cmd = match[1].trim().toLowerCase();
+  let result = '';
+  let cmdValid = true;
   switch (cmd) {
     case 'help': {
       const cmds = [
         '/fifa today 顯示今天的比賽時間',
         '/fifa tomorrow 顯示明天的比賽時間',
         '/fifa current 顯示當前賽況',
-        '/fifa last 顯示上一場比賽的結果',
+        '/fifa last [team] 顯示(指定球隊)上一場比賽結果',
+        '/fifa group <letter> 顯示小組賽況',
+        '/fifa team [team] 顯示(指定)球隊資訊',
+        '/fifa next [team] 顯示(指定球隊)下一場比賽時間',
       ];
-      await context.replyText(cmds.join('\n'));
+      result = cmds.join('\n');
       break;
     }
     case 'today': {
-      visitor.event('FIFA', 'today').send();
-      const result = await fifa.today();
-      await context.replyText(result);
+      result = await fifa.todayMatches();
       break;
     }
     case 'tomorrow': {
-      visitor.event('FIFA', 'tomorrow').send();
-      const result = await fifa.tomorrow();
-      await context.replyText(result);
+      result = await fifa.tomorrowMatches();
       break;
     }
     case 'current': {
-      visitor.event('FIFA', 'current').send();
-      const result = await fifa.current();
-      await context.replyText(result);
+      result = await fifa.currentMatch();
       break;
     }
     case 'last': {
-      visitor.event('FIFA', 'last').send();
-      const result = await fifa.last();
-      await context.replyText(result);
+      let code = '';
+      if (match[2] !== undefined) {
+        code = match[2].trim();
+      }
+      result = await fifa.lastMatch(code);
+      break;
+    }
+    case 'team': {
+      let code = '';
+      if (match[2] !== undefined) {
+        code = match[2].trim();
+      }
+      result = await fifa.teamStatus(code);
+      break;
+    }
+    case 'next': {
+      let code = '';
+      if (match[2] !== undefined) {
+        code = match[2].trim();
+      }
+      result = await fifa.nextMatch(code);
+      break;
+    }
+    case 'group': {
+      let code = '';
+      if (match[2] !== undefined) {
+        code = match[2].trim();
+      }
+      result = await fifa.groupStatus(code);
       break;
     }
     default: {
+      cmdValid = false;
       break;
     }
+  }
+  if (cmdValid) {
+    visitor.event('FIFA', cmd).send();
+    await context.replyText(result);
+  } else {
+    await context.replyText('kóng siánn-siâu');
   }
 };
 
@@ -187,7 +219,7 @@ const handler = new LineHandler()
   .onText(/^\/roll -xx$/i, rollXXHandler)
   .onText(/^巨巨幫我翻譯[:|：]?\s*(.*)/, translationHandler)
   .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
-  .onText(/^\/fifa (.*)/, fifaHandler)
+  .onText(/^\/fifa\s+(\w+)(?:\s+(\w+))?/i, fifaHandler)
   .onText(keywordHandler);
 
 const bot = new LineBot({
