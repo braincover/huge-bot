@@ -9,7 +9,30 @@ async function todayMatches() {
     );
     const matches = response.data;
     if (matches === undefined || matches.length < 1) {
-      return 'FIFA今天沒有比賽喔';
+      return '世界杯今天沒有比賽喔';
+    }
+    const replies = matches.map(
+      match =>
+        `${match.home_team.country} vs ${match.away_team.country} -- ${moment(
+          match.datetime
+        )
+          .tz('Asia/Taipei')
+          .format('HH:mm')}`
+    );
+    return replies.join('\n');
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function tomorrowMatches() {
+  try {
+    const response = await axios.get(
+      'http://worldcup.sfg.io/matches/tomorrow?by_date=asc'
+    );
+    const matches = response.data;
+    if (matches === undefined || matches.length < 1) {
+      return '世界杯明天沒有比賽喔';
     }
     const replies = matches.map(
       match =>
@@ -30,7 +53,7 @@ async function currentMatch() {
     const response = await axios.get('http://worldcup.sfg.io/matches/current');
     const matches = response.data;
     if (matches === undefined || matches.length < 1) {
-      return 'FIFA現在沒有在比賽喔';
+      return '世界杯現在沒有在比賽喔';
     }
     const match = matches[0];
     return `${match.home_team.country} ${match.home_team.goals} vs ${match
@@ -78,39 +101,6 @@ async function lastMatch(code) {
       .away_team.country} ${match.away_team.goals} -- ${moment(match.datetime)
       .tz('Asia/Taipei')
       .format('MM/DD HH:mm')}`;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function tomorrowMatches() {
-  try {
-    const response = await axios.get(
-      'http://worldcup.sfg.io/matches?by_date=asc'
-    );
-    const matches = response.data;
-    if (matches === undefined || matches.length < 1) {
-      throw new Error('找不到任何資料');
-    }
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const replies = matches
-      .filter(match => {
-        const date = new Date(match.datetime);
-        return (
-          date.getUTCMonth() === tomorrow.getUTCMonth() &&
-          date.getUTCDate() === tomorrow.getUTCDate()
-        );
-      })
-      .map(
-        match =>
-          `${match.home_team.country} vs ${match.away_team.country} -- ${moment(
-            match.datetime
-          )
-            .tz('Asia/Taipei')
-            .format('HH:mm')}`
-      );
-    return replies.join('\n');
   } catch (error) {
     throw error;
   }

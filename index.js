@@ -120,13 +120,13 @@ const fifaHandler = async (context, match) => {
   switch (cmd) {
     case 'help': {
       const cmds = [
-        '/fifa today 顯示今天的比賽時間',
-        '/fifa tomorrow 顯示明天的比賽時間',
-        '/fifa current 顯示當前賽況',
-        '/fifa last [team] 顯示(指定球隊)上一場比賽結果',
-        '/fifa group <letter> 顯示小組賽況',
-        '/fifa team [team] 顯示(指定)球隊資訊',
-        '/fifa next [team] 顯示(指定球隊)下一場比賽時間',
+        '⚽ current 顯示當前賽況',
+        '⚽ today 顯示今天的比賽時間',
+        '⚽ tomorrow 顯示明天的比賽時間',
+        '⚽ last [team] 顯示(指定球隊)上一場比賽結果',
+        '⚽ next [team] 顯示(指定球隊)下一場比賽時間',
+        '⚽ group <letter> 顯示小組賽況',
+        '⚽ team [team] 顯示(指定)球隊資訊',
       ];
       result = cmds.join('\n');
       break;
@@ -220,7 +220,7 @@ const handler = new LineHandler()
   .onText(/^\/roll -xx$/i, rollXXHandler)
   .onText(/^巨巨幫我翻譯[:|：]?\s*(.*)/, translationHandler)
   .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
-  .onText(/^\/fifa\s+(\w+)(?:\s+(\w+))?/i, fifaHandler)
+  .onText(/^(?:\(soccer ball\)|⚽)\s*(\w+)(?:\s?(\w+))?$/i, fifaHandler)
   .onText(keywordHandler);
 
 const bot = new LineBot({
