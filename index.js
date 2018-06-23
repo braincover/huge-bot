@@ -220,7 +220,7 @@ const handler = new LineHandler()
   .onText(/^\/roll -xx$/i, rollXXHandler)
   .onText(/^巨巨幫我翻譯[:|：]?\s*(.*)/, translationHandler)
   .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
-  .onText(/^(?:\(soccer ball\)|⚽)\s*(\w+)(?:\s?(\w+))?$/i, fifaHandler)
+  .onText(/^(?:\(soccer ball\)|\(足球\)|⚽)\s*(\w+)(?:\s?(\w+))?$/i, fifaHandler)
   .onText(keywordHandler);
 
 const bot = new LineBot({
