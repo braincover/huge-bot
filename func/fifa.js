@@ -162,48 +162,46 @@ async function teamsStatus() {
   }
 }
 
-function getTeamResults() {
-  return axios.get('http://worldcup.sfg.io/teams/results');
-}
-function getTeamMatches(code) {
-  return axios.get(`http://worldcup.sfg.io/matches/country?fifa_code=${code}`);
-}
 async function teamStatus(code) {
   try {
-    return await axios.all([getTeamResults(), getTeamMatches(code)]).then(
-      axios.spread((teamsResponse, matchesResponse) => {
-        const teams = teamsResponse.data;
-        if (teams === undefined || teams.length < 1) {
-          throw new Error('找不到任何資料');
-        }
-        const team = teams.find(
-          element =>
-            element.country.toUpperCase() === code.toUpperCase() ||
-            element.fifa_code.toUpperCase() === code.toUpperCase()
-        );
-        const teamResult = `小組 出賽 勝 平 負 積分 球隊(代碼)\n${team.group_letter} ${team.games_played} ${team.wins} ${team.draws} ${team.losses} ${team.points} ${team.country}(${team.fifa_code})`;
-        const matches = matchesResponse.data;
-        if (matches === undefined || matches.length < 1) {
-          throw new Error('找不到任何資料');
-        }
-        const replies = matches.map(match => {
-          if (match.status === 'future') {
-            return `${match.home_team.country} vs ${match.away_team
-              .country} -- ${moment(match.datetime)
-              .tz('Asia/Taipei')
-              .format('MM/DD HH:mm')}`;
+    return await axios
+      .all([
+        axios.get('http://worldcup.sfg.io/teams/results'),
+        axios.get(`http://worldcup.sfg.io/matches/country?fifa_code=${code}`),
+      ])
+      .then(
+        axios.spread((teamsResponse, matchesResponse) => {
+          const teams = teamsResponse.data;
+          if (teams === undefined || teams.length < 1) {
+            throw new Error('找不到任何資料');
           }
-          return `${match.home_team.country} ${match.home_team.goals} vs ${match
-            .away_team.country} ${match.away_team.goals} -- ${moment(
-            match.datetime
-          )
-            .tz('Asia/Taipei')
-            .format('MM/DD')}`;
-        });
-        const matchResult = replies.join('\n');
-        return `${teamResult}\n${matchResult}`;
-      })
-    );
+          const team = teams.find(
+            element =>
+              element.country.toUpperCase() === code.toUpperCase() ||
+              element.fifa_code.toUpperCase() === code.toUpperCase()
+          );
+          const teamResult = `小組 出賽 勝 平 負 積分 球隊(代碼)\n${team.group_letter} ${team.games_played} ${team.wins} ${team.draws} ${team.losses} ${team.points} ${team.country}(${team.fifa_code})`;
+          const matches = matchesResponse.data;
+          if (matches === undefined || matches.length < 1) {
+            throw new Error('找不到任何資料');
+          }
+          const replies = matches.map(match => {
+            if (match.status === 'future') {
+              return `${match.home_team.country} vs ${match.away_team
+                .country} -- ${moment(match.datetime)
+                .tz('Asia/Taipei')
+                .format('MM/DD HH:mm')}`;
+            }
+            return `${match.home_team.country} ${match.home_team
+              .goals} vs ${match.away_team.country} ${match.away_team
+              .goals} -- ${moment(match.datetime)
+              .tz('Asia/Taipei')
+              .format('MM/DD')}`;
+          });
+          const matchResult = replies.join('\n');
+          return `${teamResult}\n${matchResult}`;
+        })
+      );
   } catch (error) {
     throw error;
   }
