@@ -125,9 +125,9 @@ async function groupStatus(code) {
       .map(obj => obj.team)
       .map(
         team =>
-          `${team.games_played} ${team.wins} ${team.draws} ${team.losses} ${team.points} ${team.country}(${team.fifa_code})`
+          ` ${team.games_played}  ${team.wins} ${team.draws} ${team.losses}  ${team.goals_for} ${team.goals_against} ${team.goal_differential}  ${team.points}  ${team.fifa_code}`
       );
-    return `小組 ${group.group.letter} 戰況\n出賽 勝 平 負 積分 球隊(代碼)\n${replies.join(
+    return `小組 ${group.group.letter} 戰況\n賽 勝.平.負 得.失.差 分 球隊\n${replies.join(
       '\n'
     )}`;
   } catch (error) {
@@ -137,16 +137,21 @@ async function groupStatus(code) {
 
 async function teamsStatus() {
   try {
-    const response = await axios.get('http://worldcup.sfg.io/teams/results');
-    const teams = response.data;
-    if (teams === undefined || teams.length < 1) {
+    const response = await axios.get(
+      'http://worldcup.sfg.io/teams/group_results'
+    );
+    const groups = response.data;
+    if (groups === undefined || groups.length < 1) {
       throw new Error('找不到任何資料');
     }
-    const replies = teams.map(
-      team =>
-        `${team.group_letter} ${team.games_played} ${team.wins} ${team.draws} ${team.losses} ${team.points} ${team.country}(${team.fifa_code})`
+    const replies = groups.map(
+      group =>
+        `Group ${group.group.letter}:\n${group.group.teams
+          .map(team => team.team)
+          .map(team => `  ${team.country} ( ${team.fifa_code} )`)
+          .join('\n')}`
     );
-    return `小組 出賽 勝 平 負 積分 球隊(代碼)\n${replies.join('\n')}`;
+    return replies.join('\n');
   } catch (error) {
     throw error;
   }
@@ -154,44 +159,49 @@ async function teamsStatus() {
 
 async function teamStatus(code) {
   try {
-    return await axios
-      .all([
-        axios.get('http://worldcup.sfg.io/teams/results'),
-        axios.get(`http://worldcup.sfg.io/matches/country?fifa_code=${code}`),
-      ])
-      .then(
-        axios.spread((teamsResponse, matchesResponse) => {
-          const teams = teamsResponse.data;
-          if (teams === undefined || teams.length < 1) {
-            throw new Error('找不到任何資料');
-          }
-          const team = teams.find(
-            element =>
-              element.country.toUpperCase() === code.toUpperCase() ||
-              element.fifa_code.toUpperCase() === code.toUpperCase()
-          );
-          const teamResult = `小組 出賽 勝 平 負 積分 球隊(代碼)\n${team.group_letter} ${team.games_played} ${team.wins} ${team.draws} ${team.losses} ${team.points} ${team.country}(${team.fifa_code})`;
-          const matches = matchesResponse.data;
-          if (matches === undefined || matches.length < 1) {
-            throw new Error('找不到任何資料');
-          }
-          const replies = matches.map(match => {
-            if (match.status === 'future') {
-              return `${match.home_team.country} vs ${match.away_team
-                .country} -- ${moment(match.datetime)
-                .tz('Asia/Taipei')
-                .format('MM/DD HH:mm')}`;
-            }
-            return `${match.home_team.country} ${match.home_team
-              .goals} vs ${match.away_team.country} ${match.away_team
-              .goals} -- ${moment(match.datetime)
-              .tz('Asia/Taipei')
-              .format('MM/DD')}`;
-          });
-          const matchResult = replies.join('\n');
-          return `${teamResult}\n${matchResult}`;
-        })
-      );
+    const teamsResponse = await axios.get(
+      'http://worldcup.sfg.io/teams/results'
+    );
+    const teams = teamsResponse.data;
+    if (teams === undefined || teams.length < 1) {
+      throw new Error('找不到任何資料');
+    }
+    const team = teams.find(
+      obj =>
+        obj.country.toUpperCase() === code.toUpperCase() ||
+        obj.fifa_code.toUpperCase() === code.toUpperCase()
+    );
+    if (team === undefined) {
+      return `找不到球隊 ${code}`;
+    }
+    const teamResult = `${team.country} ( ${team.fifa_code} ) 組${team.group_letter}\n賽 勝.平.負 得.失.差 分\n ${team.games_played}  ${team.wins} ${team.draws} ${team.losses}  ${team.goals_for} ${team.goals_against} ${team.goal_differential}  ${team.points}`;
+
+    const matchesResponse = await axios.get(
+      `http://worldcup.sfg.io/matches/country?fifa_code=${team.fifa_code}`
+    );
+    const matches = matchesResponse.data;
+    if (matches === undefined || matches.length < 1) {
+      throw new Error('找不到任何資料');
+    }
+    const replies = matches.map(match => {
+      const home =
+        match.home_team.fifa_code === team.fifa_code
+          ? '_'
+          : match.home_team.country;
+      const away =
+        match.away_team.fifa_code === team.fifa_code
+          ? '_'
+          : match.away_team.country;
+      if (match.status === 'future') {
+        return `${home} vs ${away} -- ${moment(match.datetime)
+          .tz('Asia/Taipei')
+          .format('MM/DD HH:mm')}`;
+      }
+      return `${home} ${match.home_team.goals} vs ${away} ${match.away_team
+        .goals} -- ${moment(match.datetime).tz('Asia/Taipei').format('MM/DD')}`;
+    });
+    const matchResult = replies.join('\n');
+    return `${teamResult}\n${matchResult}`;
   } catch (error) {
     throw error;
   }
