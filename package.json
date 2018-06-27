@@ -1,50 +1,60 @@
 {
   "name": "huge-bot",
-  "version": "1.0.0",
   "description": "huge what XD",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint *.js",
-    "lint:fix": "npm run lint -- --fix",
-    "lint:staged": "lint-staged",
-    "precommit": "lint-staged",
-    "start": "node index.js"
-  },
+  "license": "ISC",
+  "author": "Arthur",
   "repository": {
     "type": "git",
     "url": "https://github.com/braincover/huge-bot.git"
   },
-  "author": "Arthur",
-  "license": "ISC",
-  "engines": {
-    "node": "8.x"
-  },
-  "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "eslint": "^4.5.0",
-    "eslint-config-airbnb-base": "^11.3.2",
-    "eslint-config-prettier": "^2.3.0",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-prettier": "^2.2.0",
-    "husky": "^0.14.3",
-    "lint-staged": "^4.0.4",
-    "prettier": "~1.5.3"
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "precommit": "lint-staged",
+    "dev": "cross-env USE_CONSOLE=true node index.js",
+    "lint": "eslint *.js",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:staged": "lint-staged",
+    "start": "node index.js"
   },
   "dependencies": {
     "airtable": "^0.5.6",
     "axios": "^0.18.0",
-    "bottender": "^0.14.34",
-    "csv-parse": "^1.2.1",
-    "dotenv": "^4.0.0",
-    "kuroshiro": "^0.1.5",
+    "bottender": "^0.15.0-rc.1",
+    "cross-env": "^5.2.0",
+    "csv-parse": "^2.5.0",
+    "dotenv": "^6.0.0",
+    "kuroshiro": "^0.2.4",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
-    "moment-timezone": "^0.5.20",
+    "moment-timezone": "^0.5.21",
     "pick-random": "^2.0.0",
     "random-item": "^1.0.0",
-    "universal-analytics": "^0.4.15"
+    "universal-analytics": "^0.4.17"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.5",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-prettier": "^2.6.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.2.0",
+    "prettier": "^1.13.6",
+    "prettier-package-json": "^1.6.0"
+  },
+  "engines": {
+    "node": "8.x"
   },
   "lint-staged": {
-    "*.js": "eslint --fix"
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "package.json": [
+      "prettier-package-json --write",
+      "git add"
+    ]
   }
 }

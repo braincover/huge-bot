@@ -1,6 +1,8 @@
 /* eslint no-console: 0 */
 
-const { LineBot, LineHandler } = require('bottender');
+require('dotenv').config();
+
+const { ConsoleBot, LineBot, LineHandler } = require('bottender');
 const { createServer } = require('bottender/express');
 const airtable = require('airtable');
 const ua = require('universal-analytics');
@@ -67,7 +69,9 @@ function matchRules(msg, rules) {
     let text = msg;
     let key = rule.get('key');
     if (rule.get('insensitive')) {
-      text = toASCII(text).toLowerCase().replace(/[()]/g, '');
+      text = toASCII(text)
+        .toLowerCase()
+        .replace(/[()]/g, '');
       key = key.toLowerCase();
     }
     return text.includes(key);
@@ -220,19 +224,32 @@ const handler = new LineHandler()
   .onText(/^\/roll -xx$/i, rollXXHandler)
   .onText(/^巨巨幫我翻譯[:|：]?\s*(.*)/, translationHandler)
   .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
-  .onText(/^(?:\(soccer ball\)|\(足球\)|⚽)\s*(\w+)(?:\s?(\w+))?$/i, fifaHandler)
+  .onText(
+    /^(?:\(soccer ball\)|\(足球\)|⚽)\s*(\w+)(?:\s?(\w+))?$/i,
+    fifaHandler
+  )
   .onText(keywordHandler);
 
-const bot = new LineBot({
-  channelSecret: process.env.ChannelSecret,
-  accessToken: process.env.ChannelAccessToken,
-});
+const useConsole = process.env.USE_CONSOLE === 'true';
 
-bot.onEvent(handler);
+if (useConsole) {
+  const bot = new ConsoleBot({ fallbackMethods: true });
 
-const server = createServer(bot);
-const PORT = process.env.PORT || 3000;
+  bot.onEvent(handler);
 
-server.listen(PORT, () => {
-  console.log(`server is running on ${PORT}...`);
-});
+  bot.createRuntime();
+} else {
+  const bot = new LineBot({
+    channelSecret: process.env.ChannelSecret,
+    accessToken: process.env.ChannelAccessToken,
+  });
+
+  bot.onEvent(handler);
+
+  const server = createServer(bot);
+  const PORT = process.env.PORT || 3000;
+
+  server.listen(PORT, () => {
+    console.log(`server is running on ${PORT}...`);
+  });
+}
