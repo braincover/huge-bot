@@ -115,21 +115,19 @@ async function groupStatus(code) {
     if (groups === undefined || groups.length < 1) {
       throw new Error('找不到任何資料');
     }
-    const group = groups.find(
-      element => element.group.letter.toUpperCase() === code.toUpperCase()
-    );
+    const group = groups
+      .map(_group => (_group.group ? _group.group : _group))
+      .find(element => element.letter.toUpperCase() === code.toUpperCase());
     if (group === undefined) {
       return `找不到小組 ${code}`;
     }
-    const replies = group.group.teams
-      .map(obj => obj.team)
+    const replies = group.ordered_teams
+      .map(team => (team.team ? team.team : team))
       .map(
         team =>
           ` ${team.games_played}  ${team.wins} ${team.draws} ${team.losses}  ${team.goals_for} ${team.goals_against} ${team.goal_differential}  ${team.points}  ${team.fifa_code}`
       );
-    return `小組 ${group.group.letter} 戰況\n賽 勝.平.負 得.失.差 分 球隊\n${replies.join(
-      '\n'
-    )}`;
+    return `小組 ${group.letter} 戰況\n賽 勝.平.負 得.失.差 分 球隊\n${replies.join('\n')}`;
   } catch (error) {
     throw error;
   }
@@ -144,13 +142,15 @@ async function teamsStatus() {
     if (groups === undefined || groups.length < 1) {
       throw new Error('找不到任何資料');
     }
-    const replies = groups.map(
-      group =>
-        `Group ${group.group.letter}:\n${group.group.teams
-          .map(team => team.team)
-          .map(team => `  ${team.country} ( ${team.fifa_code} )`)
-          .join('\n')}`
-    );
+    const replies = groups
+      .map(_group => (_group.group ? _group.group : _group))
+      .map(
+        group =>
+          `Group ${group.group.letter}:\n${group.group.ordered_teams
+            .map(team => (team.team ? team.team : team))
+            .map(team => `  ${team.country} ( ${team.fifa_code} )`)
+            .join('\n')}`
+      );
     return replies.join('\n');
   } catch (error) {
     throw error;
