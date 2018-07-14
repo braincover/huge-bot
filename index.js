@@ -71,7 +71,7 @@ function matchRules(msg, rules) {
     if (rule.get('insensitive')) {
       text = toASCII(text)
         .toLowerCase()
-        .replace(/[()]\s/g, '');
+        .replace(/[()\s]/g, '');
       key = key.toLowerCase();
     }
     return text.includes(key);
