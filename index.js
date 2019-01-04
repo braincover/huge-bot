@@ -212,6 +212,21 @@ const keywordHandler = async context => {
         }
         break;
       }
+      case 'bubble': {
+        if (matchedRule.get('image')) {
+          const bubbleImage = matchedRule.get('image')[0].thumbnails.full;
+          await context.replyFlex(matchedRule.get('key'), {
+            type: 'bubble',
+            hero: {
+              type: 'image',
+              url: bubbleImage.url,
+              size: 'full',
+              aspectRatio: `${bubbleImage.width}:${bubbleImage.height}`,
+            },
+          });
+        }
+        break;
+      }
       default: {
         break;
       }
