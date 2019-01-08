@@ -66,7 +66,7 @@ function toASCII(chars) {
 
 function matchRules(msg, rules) {
   const matchRule = rules.find(rule => {
-    let text = msg;
+    let text = msg.replace(/(?:https?):\/\/[\S]+/g, '');
     let key = rule.get('key');
     if (rule.get('insensitive')) {
       text = toASCII(text)
