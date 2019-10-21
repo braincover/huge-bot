@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "airtable": "^0.5.6",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "bottender": "^0.15.0-rc.1",
     "cross-env": "^5.2.0",
     "csv-parse": "^2.5.0",
