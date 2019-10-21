@@ -22,7 +22,7 @@
     "axios": "^0.18.0",
     "bottender": "^0.15.0-rc.1",
     "cross-env": "^5.2.0",
-    "csv-parse": "^2.5.0",
+    "csv-parse": "^4.4.6",
     "dotenv": "^6.0.0",
     "kuroshiro": "^0.2.4",
     "lodash": "^4.17.10",
