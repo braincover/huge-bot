@@ -18,11 +18,12 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "airtable": "^0.5.10",
+    "airtable": "^0.7.2",
+    "ajv": "^5.0.0",
     "axios": "^0.18.1",
     "bottender": "^0.15.17",
     "cross-env": "^5.2.1",
-    "csv-parse": "^4.4.6",
+    "csv-parse": "^4.8.2",
     "dotenv": "^6.2.0",
     "kuroshiro": "^0.2.4",
     "lodash": "^4.17.13",
@@ -41,7 +42,7 @@
     "eslint-plugin-prettier": "^2.7.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.3.0",
-    "prettier": "^1.18.2",
+    "prettier": "^1.19.1",
     "prettier-package-json": "^1.6.0"
   },
   "engines": {
