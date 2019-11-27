@@ -214,7 +214,7 @@ const keywordHandler = async context => {
       }
       case 'bubble': {
         if (matchedRule.get('image')) {
-          const bubbleImage = matchedRule.get('image')[0].thumbnails.full;
+          const bubbleImage = matchedRule.get('image')[0].thumbnails.large;
           await context.replyFlex(matchedRule.get('key'), {
             type: 'bubble',
             hero: {
