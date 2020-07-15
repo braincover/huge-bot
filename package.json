@@ -26,7 +26,7 @@
     "csv-parse": "^4.8.2",
     "dotenv": "^6.2.0",
     "kuroshiro": "^0.2.4",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
     "pick-random": "^2.0.0",
