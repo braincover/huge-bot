@@ -234,9 +234,11 @@ const keywordHandler = async context => {
   } else if (context.event.text === context.state.lastMessage) {
     if (!context.state.isFollowing) {
       if (context.session.user.id !== context.state.lastSpeakerID) {
-        context.setState({ isFollowing: true });
-        visitor.event('跟風推齊', context.event.text).send();
-        await context.replyText(context.event.text);
+        if (context.event.text !== '(emoji)') {
+          context.setState({ isFollowing: true });
+          visitor.event('跟風推齊', context.event.text).send();
+          await context.replyText(context.event.text);
+        }
       }
     }
   } else {
