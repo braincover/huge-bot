@@ -20,7 +20,7 @@
   "dependencies": {
     "airtable": "^0.7.2",
     "ajv": "^5.0.0",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "bottender": "^0.15.17",
     "cross-env": "^5.2.1",
     "csv-parse": "^4.8.2",
