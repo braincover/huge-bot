@@ -6,19 +6,10 @@ const { ConsoleBot, LineBot, LineHandler } = require('bottender');
 const { createServer } = require('bottender/express');
 const airtable = require('airtable');
 const ua = require('universal-analytics');
-const kuroshiro = require('kuroshiro');
 
 const mhxx = require('./func/mhxx');
 const mhw = require('./func/mhw');
 const fifa = require('./func/fifa');
-
-kuroshiro.init(err => {
-  if (err) {
-    console.log(`kuroshiro init failed: ${err}`);
-  } else {
-    console.log('kuroshiro init successed.');
-  }
-});
 
 const visitor = ua('UA-105745910-1', { https: true });
 
@@ -92,22 +83,6 @@ const rollWHandler = async (context, match) => {
 const rollXXHandler = async context => {
   visitor.event('狩獵輪盤', 'MHXX').send();
   await context.replyText(mhxx.roulette());
-};
-
-const translationHandler = async (context, match) => {
-  const src = match[1].trim();
-
-  if (src) {
-    visitor.event('假名翻譯', '假名翻譯', src).send();
-    const result = kuroshiro.convert(src, {
-      mode: 'okurigana',
-      delimiter_start: ' ',
-      delimiter_end: '\n',
-    });
-    await context.replyText(
-      `${context.session.user.displayName}你的翻譯是：\n${result}`
-    );
-  }
 };
 
 const howHandler = async (context, match) => {
@@ -253,7 +228,6 @@ const keywordHandler = async context => {
 const handler = new LineHandler()
   .onText(/^\/roll(?: >(\d))?$/i, rollWHandler)
   .onText(/^\/roll -xx$/i, rollXXHandler)
-  .onText(/^巨巨幫我(?:翻譯|拼音?)[:|：]?\s*(.*)/, translationHandler)
   .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
   .onText(
     /^(?:\(soccer ball\)|\(足球\)|⚽)\s*(\w+)(?:\s?(\w+))?$/i,

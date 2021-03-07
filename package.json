@@ -2,7 +2,7 @@
   "name": "huge-bot",
   "description": "huge what XD",
   "license": "ISC",
-  "author": "Arthur",
+  "author": "Uîtiat Tsiā",
   "repository": {
     "type": "git",
     "url": "https://github.com/braincover/huge-bot.git"
@@ -18,14 +18,13 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "airtable": "^0.7.2",
+    "airtable": "^0.10.1",
     "ajv": "^5.0.0",
     "axios": "^0.21.1",
     "bottender": "^0.15.17",
     "cross-env": "^5.2.1",
     "csv-parse": "^4.8.2",
     "dotenv": "^6.2.0",
-    "kuroshiro": "^0.2.4",
     "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
