@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/braincover/huge-bot.git"
   },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "scripts": {
     "precommit": "lint-staged",
@@ -18,19 +18,15 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "airtable": "^0.10.1",
-    "ajv": "^5.0.0",
+    "airtable": "^0.11.0",
     "axios": "^0.21.1",
-    "bottender": "^0.15.17",
-    "cross-env": "^5.2.1",
-    "csv-parse": "^4.8.2",
-    "dotenv": "^6.2.0",
-    "lodash": "^4.17.19",
-    "moment": "^2.24.0",
-    "moment-timezone": "^0.5.27",
-    "pick-random": "^2.0.0",
-    "random-item": "^1.0.0",
-    "universal-analytics": "^0.4.20"
+    "bottender": "^1.5.1-alpha.9",
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
+    "random-item": "^3.1.0",
+    "universal-analytics": "^0.4.23"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.6",
@@ -45,7 +41,7 @@
     "prettier-package-json": "^1.6.0"
   },
   "engines": {
-    "node": "8.x"
+    "node": ">=8"
   },
   "lint-staged": {
     "*.js": [

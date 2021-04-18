@@ -1,5 +1,6 @@
+// mhw.js
+
 const random = require('random-item');
-const pickRandom = require('pick-random');
 const flatten = require('lodash/flatten');
 
 const weapons = [
@@ -108,7 +109,7 @@ module.exports = {
 
     ['一', '二', '三', '四'].forEach(num => {
       const weapon = random(weapons);
-      const toolspair = pickRandom(tools, { count: 2 });
+      const toolspair = random.multiple(tools, 2);
       msg += `${num}: ${weapon} (${toolspair[0]}, ${toolspair[1]})\n`;
     });
 

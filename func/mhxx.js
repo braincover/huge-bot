@@ -1,3 +1,5 @@
+// mhxx.js
+
 const random = require('random-item');
 
 const weapons = [
@@ -17,7 +19,14 @@ const weapons = [
   '弓',
 ];
 
-const styles = ['ギルド', 'ストライカー', 'エリアル', 'ブシドー', 'ブレイヴ', 'レンキン'];
+const styles = [
+  'ギルド',
+  'ストライカー',
+  'エリアル',
+  'ブシドー',
+  'ブレイヴ',
+  'レンキン',
+];
 
 const hani1 = [
   'G★1　つつかれて、またつつかれて/イャンクック',

@@ -2,8 +2,8 @@
 
 require('dotenv').config();
 
-const { ConsoleBot, LineBot, LineHandler } = require('bottender');
-const { createServer } = require('bottender/express');
+const { router, onText } = require('bottender/router');
+
 const airtable = require('airtable');
 const ua = require('universal-analytics');
 
@@ -225,36 +225,15 @@ const keywordHandler = async context => {
   });
 };
 
-const handler = new LineHandler()
-  .onText(/^\/roll(?: >(\d))?$/i, rollWHandler)
-  .onText(/^\/roll -xx$/i, rollXXHandler)
-  .onText(/巨巨覺得(.*)怎麼樣/, howHandler)
-  .onText(
-    /^(?:\(soccer ball\)|\(足球\)|⚽)\s*(\w+)(?:\s?(\w+))?$/i,
-    fifaHandler
-  )
-  .onText(keywordHandler);
-
-const useConsole = process.env.USE_CONSOLE === 'true';
-
-if (useConsole) {
-  const bot = new ConsoleBot({ fallbackMethods: true });
-
-  bot.onEvent(handler);
-
-  bot.createRuntime();
-} else {
-  const bot = new LineBot({
-    channelSecret: process.env.ChannelSecret,
-    accessToken: process.env.ChannelAccessToken,
-  });
-
-  bot.onEvent(handler);
-
-  const server = createServer(bot);
-  const PORT = process.env.PORT || 3000;
-
-  server.listen(PORT, () => {
-    console.log(`server is running on ${PORT}...`);
-  });
-}
+module.export = function App() {
+  return router([
+    onText(/^\/roll(?: >(\d))?$/i, rollWHandler),
+    onText(/^\/roll -xx$/i, rollXXHandler),
+    onText(/巨巨覺得(.*)怎麼樣/, howHandler),
+    onText(
+      /^(?:\(soccer ball\)|\(足球\)|⚽)\s*(\w+)(?:\s?(\w+))?$/i,
+      fifaHandler
+    ),
+    onText('*', keywordHandler),
+  ]);
+};
