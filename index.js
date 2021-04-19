@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 
-const { router, onText } = require('bottender/router');
+const { router, text: onText } = require('bottender/router');
 
 const airtable = require('airtable');
 const ua = require('universal-analytics');
@@ -225,7 +225,7 @@ const keywordHandler = async context => {
   });
 };
 
-module.export = function App() {
+module.exports = function App() {
   return router([
     onText(/^\/roll(?: >(\d))?$/i, rollWHandler),
     onText(/^\/roll -xx$/i, rollXXHandler),

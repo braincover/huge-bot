@@ -11,11 +11,11 @@
   "main": "index.js",
   "scripts": {
     "precommit": "lint-staged",
-    "dev": "cross-env USE_CONSOLE=true node index.js",
+    "dev": "bottender dev -- --console",
     "lint": "eslint *.js",
     "lint:fix": "npm run lint -- --fix",
     "lint:staged": "lint-staged",
-    "start": "node index.js"
+    "start": "bottender start"
   },
   "dependencies": {
     "airtable": "^0.11.0",
