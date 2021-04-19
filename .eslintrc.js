@@ -11,6 +11,7 @@ module.exports = {
   rules: {
     'class-methods-use-this': 'off',
     'consistent-return': 'off',
+    'no-else-return': 'off',
     'no-param-reassign': 'off',
     'no-return-assign': 'off',
     'no-await-in-loop': 'warn',

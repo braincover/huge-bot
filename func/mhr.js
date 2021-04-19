@@ -22,17 +22,24 @@ const weapons = [
 
 let questsCache = [];
 let lastQueryDate;
-function fetchQuest() {
+async function fetchQuest() {
   const CACHE_TIME = 60 * 1000;
   const current = new Date();
   let shouldUpdate = true;
   if (lastQueryDate) {
     shouldUpdate = current - lastQueryDate > CACHE_TIME;
   }
+  const base = airtable.base(process.env.AIRTABLE_MHR_BASE_ID);
   if (shouldUpdate) {
+    const newQuests = await base('High Rank Quest')
+      .select({
+        view: 'Grid view',
+      })
+      .all();
+    questsCache = newQuests || questsCache;
     lastQueryDate = current;
-
-    const base = airtable.base(process.env.AIRTABLE_MHR_BASE_ID);
+    return questsCache;
+  } else {
     base('High Rank Quest')
       .select({
         view: 'Grid view',
@@ -41,12 +48,12 @@ function fetchQuest() {
       .then(newQuests => {
         questsCache = newQuests || questsCache;
       });
+    return questsCache;
   }
 }
 
 module.exports = {
-  roulette() {
-    fetchQuest();
+  async roulette() {
     let msg = '';
     ['一', '二', '三', '四'].forEach(num => {
       const weapon = random(weapons);
@@ -57,12 +64,9 @@ module.exports = {
       msg += `${num}: ${weapon} (${buddy}/${skill1}/${skill2}/${skill3})\n`;
     });
 
-    if (Array.isArray(questsCache) && questsCache.length === 0) {
-      msg += `\n任務: 讀取中...請稍後再試`;
-    } else {
-      const quest = random(questsCache);
-      msg += `\n任務: ${quest.get('Name')}\n目標: ${quest.get('Objective')}`;
-    }
+    const quests = await fetchQuest();
+    const quest = random(quests);
+    msg += `\n任務: ${quest.get('Name')}\n目標: ${quest.get('Objective')}`;
     return msg;
   },
 };

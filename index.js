@@ -16,7 +16,8 @@ const visitor = ua('UA-105745910-1', { https: true });
 
 const rollRHandler = async context => {
   visitor.event('狩獵輪盤', 'MHR').send();
-  await context.replyText(mhr.roulette());
+  const msg = await mhr.roulette();
+  await context.replyText(msg);
 };
 
 const rollWHandler = async (context, match) => {
