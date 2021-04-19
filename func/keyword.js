@@ -12,6 +12,7 @@ function fetchRules() {
   }
   if (shouldUpdate) {
     lastQueryDate = current;
+    // eslint-disable-next-line no-console
     console.log('Query airtable', lastQueryDate);
 
     const base = airtable.base(process.env.AIRTABLE_BASE_ID);

@@ -130,7 +130,10 @@ const keywordHandler = async context => {
       }
       case 'image': {
         if (matchedRule.get('image')) {
-          await context.replyImage(matchedRule.get('image')[0].url);
+          await context.replyImage({
+            originalContentUrl: matchedRule.get('image')[0].url,
+            previewImageUrl: matchedRule.get('image')[0].thumbnails.small.url,
+          });
         }
         break;
       }
