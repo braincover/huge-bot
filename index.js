@@ -9,9 +9,15 @@ const ua = require('universal-analytics');
 const keyword = require('./func/keyword');
 const mhxx = require('./func/mhxx');
 const mhw = require('./func/mhw');
+const mhr = require('./func/mhr');
 const fifa = require('./func/fifa');
 
 const visitor = ua('UA-105745910-1', { https: true });
+
+const rollRHandler = async context => {
+  visitor.event('狩獵輪盤', 'MHR').send();
+  await context.replyText(mhr.roulette());
+};
 
 const rollWHandler = async (context, match) => {
   let star = -1;
@@ -168,7 +174,8 @@ const keywordHandler = async context => {
 
 module.exports = function App() {
   return router([
-    onText(/^\/roll(?: >(\d))?$/i, rollWHandler),
+    onText(/^\/roll$/i, rollRHandler),
+    onText(/^\/roll -w(?: >(\d))?$/i, rollWHandler),
     onText(/^\/roll -xx$/i, rollXXHandler),
     onText(/巨巨覺得(.*)怎麼樣/, howHandler),
     onText(
