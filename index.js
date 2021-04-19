@@ -4,71 +4,14 @@ require('dotenv').config();
 
 const { router, text: onText } = require('bottender/router');
 
-const airtable = require('airtable');
 const ua = require('universal-analytics');
 
+const keyword = require('./func/keyword');
 const mhxx = require('./func/mhxx');
 const mhw = require('./func/mhw');
 const fifa = require('./func/fifa');
 
 const visitor = ua('UA-105745910-1', { https: true });
-
-let rulesCache = [];
-let lastQueryDate;
-
-async function fetchRules() {
-  const CACHE_TIME = 60 * 1000;
-  const current = new Date();
-  let shouldUpdate = true;
-  if (lastQueryDate) {
-    shouldUpdate = current - lastQueryDate > CACHE_TIME;
-  }
-  if (shouldUpdate) {
-    lastQueryDate = current;
-    console.log('Query airtable', lastQueryDate);
-
-    const base = airtable.base(process.env.AIRTABLE_BASE_ID);
-    base('keyword')
-      .select({
-        view: 'Grid view',
-      })
-      .all()
-      .then(newRules => {
-        rulesCache = newRules || rulesCache;
-      });
-  }
-  return rulesCache;
-}
-
-function toASCII(chars) {
-  let ascii = '';
-  for (let i = 0; i < chars.length; i += 1) {
-    let c = chars[i].charCodeAt(0);
-    // make sure we only convert half-full width char
-    if (c >= 0xff00 && c <= 0xffef) {
-      /* eslint-disable no-bitwise */
-      c = 0xff & (c + 0x20);
-      /* eslint-enable no-bitwise */
-    }
-    ascii += String.fromCharCode(c);
-  }
-  return ascii;
-}
-
-function matchRules(msg, rules) {
-  const matchRule = rules.find(rule => {
-    let text = msg.replace(/(?:https?):\/\/[\S]+/g, '');
-    let key = rule.get('key');
-    if (rule.get('insensitive')) {
-      text = toASCII(text)
-        .toLowerCase()
-        .replace(/[()\s]/g, '');
-      key = key.toLowerCase();
-    }
-    return text.includes(key);
-  });
-  return matchRule;
-}
 
 const rollWHandler = async (context, match) => {
   let star = -1;
@@ -169,9 +112,7 @@ const fifaHandler = async (context, match) => {
 };
 
 const keywordHandler = async context => {
-  const rules = await fetchRules();
-
-  const matchedRule = matchRules(context.event.text, rules);
+  const matchedRule = keyword.matchRules(context.event.text);
   if (matchedRule) {
     visitor.event('關鍵字回應', matchedRule.get('key')).send();
     const type = matchedRule.get('type');
