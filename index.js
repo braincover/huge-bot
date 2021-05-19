@@ -14,15 +14,22 @@ const fifa = require('./func/fifa');
 
 const visitor = ua('UA-105745910-1', { https: true });
 
-const rollRHandler = async context => {
-  visitor.event('狩獵輪盤', 'MHR').send();
-  const msg = await mhr.roulette();
+const rollRHandler = async (context, match) => {
+  let verbose = false;
+  let quest = false;
+  const tags = match.match[1];
+  if (tags) {
+    verbose = tags.includes('v');
+    quest = tags.includes('q');
+  }
+  visitor.event('狩獵輪盤', 'MHR', tags).send();
+  const msg = await mhr.roulette(verbose, quest);
   await context.replyText(msg);
 };
 
 const rollWHandler = async (context, match) => {
   let star = -1;
-  const cap = match[1];
+  const cap = match.match[1];
   if (cap) {
     star = parseInt(cap, 10);
   }
@@ -177,7 +184,7 @@ const keywordHandler = async context => {
 
 module.exports = function App() {
   return router([
-    onText(/^\/roll$/i, rollRHandler),
+    onText(/^\/roll(?: -([vq]+))?$/i, rollRHandler),
     onText(/^\/roll -w(?: >(\d))?$/i, rollWHandler),
     onText(/^\/roll -xx$/i, rollXXHandler),
     onText(/巨巨覺得(.*)怎麼樣/, howHandler),
