@@ -10,9 +10,21 @@ const keyword = require('./func/keyword');
 const mhxx = require('./func/mhxx');
 const mhw = require('./func/mhw');
 const mhr = require('./func/mhr');
+const mhrs = require('./func/mhrs');
 const fifa = require('./func/fifa');
 
 const visitor = ua('UA-105745910-1', { https: true });
+
+const rollRSHandler = async (context, match) => {
+  let quest = false;
+  const tags = match.match[1];
+  if (tags) {
+    quest = tags.includes('q');
+  }
+  visitor.event('狩獵輪盤', 'MHRS', tags).send();
+  const msg = await mhrs.roulette(quest);
+  await context.replyText(msg);
+};
 
 const rollRHandler = async (context, match) => {
   let verbose = false;
@@ -184,7 +196,8 @@ const keywordHandler = async context => {
 
 module.exports = function App() {
   return router([
-    onText(/^\/roll(?: -([vq]+))?$/i, rollRHandler),
+    onText(/^\/roll(?: -([q]+))?$/i, rollRSHandler),
+    onText(/^\/roll -r(?: -([vq]+))?$/i, rollRHandler),
     onText(/^\/roll -w(?: >(\d))?$/i, rollWHandler),
     onText(/^\/roll -xx$/i, rollXXHandler),
     onText(/巨巨覺得(.*)怎麼樣/, howHandler),
