@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "airtable": "^0.11.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bottender": "^1.5.1-alpha.9",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.21",
