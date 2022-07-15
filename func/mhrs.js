@@ -101,7 +101,9 @@ module.exports = {
 
     const quests = await fetchQuest();
     const quest = random(quests);
-    msg += `任務: ${quest.get('Name')}\n目標: ${quest.get('Objective')}`;
+    msg += `任務: ${quest.get('Star')} ${quest.get('Name')}\n目標: ${quest.get(
+      'Objective'
+    )}`;
     return msg;
   },
 };
