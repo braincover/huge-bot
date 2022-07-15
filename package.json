@@ -25,7 +25,7 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.33",
-    "random-int": "^3.0.0",
+    "random-int": "^2.0.0",
     "random-item": "^3.1.0",
     "universal-analytics": "^0.4.23"
   },
