@@ -72,6 +72,15 @@ module.exports = {
   async roulette(onlyQuest) {
     let msg = '';
 
+    // for (let index = 0; index < 100; index++) {
+    //   msg += String(randInt(3));
+    // }
+    // msg += Array.from(Array(100).keys())
+    //   .map(() => {
+    //     String(randInt(3));
+    //   })
+    //   .join('');
+
     if (!onlyQuest) {
       const weapons = await fetchWeapon();
       ['一', '二', '三', '四'].forEach(num => {
@@ -80,12 +89,10 @@ module.exports = {
         const buddy = random(['貓', '狗']);
         const skillCounts = [2, 2, 2, 3, 2];
         const book1 = skillCounts
-          .map(randInt)
-          .map(String)
+          .map(max => String(randInt(max - 1) + 1))
           .join('');
         const book2 = skillCounts
-          .map(randInt)
-          .map(String)
+          .map(max => String(randInt(max - 1) + 1))
           .join('');
         msg += `${num}: ${weapon} (${buddy}/${book1}/${book2})\n`;
       });
