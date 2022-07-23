@@ -69,17 +69,8 @@ async function fetchQuest() {
 }
 
 module.exports = {
-  async roulette(onlyQuest) {
+  async roulette(onlyQuest, onlyAnomaly) {
     let msg = '';
-
-    // for (let index = 0; index < 100; index++) {
-    //   msg += String(randInt(3));
-    // }
-    // msg += Array.from(Array(100).keys())
-    //   .map(() => {
-    //     String(randInt(3));
-    //   })
-    //   .join('');
 
     if (!onlyQuest) {
       const weapons = await fetchWeapon();
@@ -99,7 +90,10 @@ module.exports = {
       msg += `\n`;
     }
 
-    const quests = await fetchQuest();
+    let quests = await fetchQuest();
+    if (onlyAnomaly) {
+      quests = quests.filter(obj => obj.get('Star').includes('EX'));
+    }
     const quest = random(quests);
     msg += `任務: ${quest.get('Star')} ${quest.get('Name')}\n目標: ${quest.get(
       'Objective'

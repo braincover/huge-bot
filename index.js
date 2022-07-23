@@ -17,12 +17,14 @@ const visitor = ua('UA-105745910-1', { https: true });
 
 const rollRSHandler = async (context, match) => {
   let quest = false;
+  let anomaly = false;
   const tags = match.match[1];
   if (tags) {
     quest = tags.includes('q');
+    anomaly = tags.includes('a');
   }
   visitor.event('狩獵輪盤', 'MHRS', tags).send();
-  const msg = await mhrs.roulette(quest);
+  const msg = await mhrs.roulette(quest, anomaly);
   await context.replyText(msg);
 };
 
@@ -196,7 +198,7 @@ const keywordHandler = async context => {
 
 module.exports = function App() {
   return router([
-    onText(/^\/roll(?: -([q]+))?$/i, rollRSHandler),
+    onText(/^\/roll(?: -([aq]+))?$/i, rollRSHandler),
     onText(/^\/roll -r(?: -([vq]+))?$/i, rollRHandler),
     onText(/^\/roll -w(?: >(\d))?$/i, rollWHandler),
     onText(/^\/roll -xx$/i, rollXXHandler),
