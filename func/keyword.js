@@ -49,9 +49,10 @@ module.exports = {
       let text = msg.replace(/(?:https?):\/\/[\S]+/g, '');
       let key = rule.get('key');
       if (rule.get('insensitive')) {
+        const ignoreList = /[\s[\]\\\-/`~!@#$%％^&*()+=|{}’:;,.<>?~！@#￥……&*（）——|{}【】‘；：”“。，、？]+/g;
         text = toASCII(text)
           .toLowerCase()
-          .replace(/[()\s]/g, '');
+          .replace(ignoreList, '');
         key = key.toLowerCase();
       }
       return text.includes(key);
